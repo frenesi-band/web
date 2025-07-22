@@ -153,11 +153,21 @@
 
         .show-location {
             color: #a3aaae;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
             font-size: 1.1rem;
+        }
+
+        .show-time {
+            color: #a3aaae;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            opacity: 0.9;
         }
 
         .show-link {
@@ -321,6 +331,26 @@
     <section class="shows-section">
         <h2 class="section-title">Próximas Fechas</h2>
         <div class="shows-grid">
+          	<div class="show-card">
+                <div class="show-date">
+                    <div class="date-box">
+                        <span class="date-day">01</span>
+                        <span class="date-month">AGO</span>
+                    </div>
+                    <div class="show-info">
+                        <h3>picoypala.bar</h3>
+                        <div class="show-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Av. Alberdi 31, Rosario
+                        </div>
+                        <div class="show-time">
+                            <i class="fas fa-clock"></i>
+                            20:00hs GMT-3
+                        </div>
+                        <a href="https://www.instagram.com/picoypala.bar" class="show-link">Ver entradas →</a>
+                    </div>
+                </div>
+            </div>
             <div class="show-card">
                 <div class="show-date">
                     <div class="date-box">
@@ -333,10 +363,15 @@
                             <i class="fas fa-map-marker-alt"></i>
                             Puerto joven, Rosario
                         </div>
-                        <a href="https://www.instagram.com/cecgys625/" class="show-link">Ver entradas →</a>
+                        <div class="show-time">
+                            <i class="fas fa-clock"></i>
+                            15:00hs GMT-3
+                        </div>
+                        <a href="https://www.instagram.com/cecgys625" class="show-link">Ver entradas →</a>
                     </div>
                 </div>
             </div>
+        </div>
     </section>
 
     <!-- Social Section -->
@@ -352,8 +387,7 @@
         </div>
     </section>
 </body>
-    
-<!-- Add this to your HTML head -->
+
 <!-- © 2025 FRENESÍ. All rights reserved. Unauthorized copying prohibited. -->
     
 </html>
