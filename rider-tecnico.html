@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FRENESÍ — Rider Técnico 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;700;800&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --c1: #a3aaae;
+      --c2: #565e64;
+      --c3: #333f46;
+      --c4: #27323c;
+      --c5: #0b1f28;
+      --cream: #e8e0d4;
+      --warm: #c9b99a;
+      --green: #1DB954;
+      --red: #e06060;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--c5);
+      color: var(--cream);
+      font-family: 'Syne', sans-serif;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* GRAIN */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.45;
+      mix-blend-mode: overlay;
+    }
+
+    #grain-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 999; opacity: 0.07;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 900;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 2.5rem;
+      backdrop-filter: blur(12px);
+      background: rgba(11, 31, 40, 0.7);
+      border-bottom: 1px solid rgba(163, 170, 174, 0.1);
+    }
+
+    .nav-left { display: flex; align-items: center; gap: 1rem; }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.9rem; letter-spacing: 0.18em;
+      color: var(--cream); text-decoration: none;
+      position: relative; display: inline-block;
+    }
+    .nav-logo::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 1px; background: var(--warm);
+      transition: width 0.4s ease;
+    }
+    .nav-logo:hover::after { width: 100%; }
+
+    .nav-back {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.15em;
+      color: var(--c1); text-decoration: none;
+      text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.4rem;
+      transition: color 0.3s;
+    }
+    .nav-back:hover { color: var(--cream); }
+
+    .nav-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.22em;
+      color: var(--warm); text-transform: uppercase;
+    }
+
+    /* HERO HEADER */
+    .page-header {
+      padding: 9rem 2.5rem 4rem;
+      border-bottom: 1px solid rgba(163,170,174,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::after {
+      content: 'RIDER';
+      position: absolute;
+      right: -1rem; bottom: -2rem;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(8rem, 18vw, 16rem);
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(163,170,174,0.07);
+      letter-spacing: -0.02em;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .page-header-inner { max-width: 900px; }
+
+    .header-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.3em;
+      color: var(--warm); text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      opacity: 0; animation: fadeUp 0.7s ease 0.2s forwards;
+    }
+
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      line-height: 0.9; letter-spacing: -0.01em;
+      color: var(--cream);
+      opacity: 0; animation: fadeUp 0.8s ease 0.35s forwards;
+    }
+    .page-title .outline {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--c1);
+    }
+
+    .page-meta {
+      margin-top: 1.5rem;
+      display: flex; gap: 2rem; align-items: center;
+      flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.8s ease 0.5s forwards;
+    }
+    .meta-chip {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--c1);
+      border: 1px solid rgba(163,170,174,0.25);
+      padding: 0.35rem 0.8rem; border-radius: 2rem;
+    }
+    .meta-chip.accent { border-color: var(--warm); color: var(--warm); }
+
+    /* DOWNLOAD BTN */
+    .download-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      margin-top: 2rem;
+      background: transparent;
+      border: 1px solid rgba(163,170,174,0.4);
+      color: var(--c1);
+      padding: 0.6rem 1.4rem; border-radius: 2rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; text-decoration: none;
+      transition: color 0.3s, border-color 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      opacity: 0; animation: fadeUp 0.8s ease 0.65s forwards;
+    }
+    .download-btn:hover {
+      color: var(--cream); border-color: var(--warm);
+      box-shadow: 0 0 20px rgba(201,185,154,0.15);
+    }
+
+    /* MAIN CONTENT */
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 4rem 2.5rem 6rem;
+      display: flex; flex-direction: column; gap: 4rem;
+    }
+
+    /* SECTION */
+    .rider-section {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .rider-section.visible { opacity: 1; transform: none; }
+
+    .section-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--warm); margin-bottom: 0.8rem;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem; letter-spacing: 0.06em;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .section-title::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, rgba(163,170,174,0.2), transparent);
+    }
+
+    /* MÚSICOS GRID */
+    .musicians-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .musician-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(163,170,174,0.12);
+      border-radius: 4px;
+      padding: 1.4rem 1.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .musician-card:hover {
+      border-color: rgba(201,185,154,0.3);
+      background: rgba(255,255,255,0.05);
+    }
+    .musician-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem; color: rgba(163,170,174,0.08);
+      position: absolute; top: 0.5rem; right: 0.8rem;
+      line-height: 1; pointer-events: none;
+    }
+    .musician-instrument {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem; letter-spacing: 0.06em; color: var(--cream);
+      margin-bottom: 0.3rem;
+    }
+    .musician-role {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--warm);
+    }
+
+    /* STAGE PLOT */
+    .stage-plot {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(163,170,174,0.12);
+      border-radius: 4px;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .stage-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--c2); text-align: center; margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px dashed rgba(163,170,174,0.15);
+    }
+
+    .stage-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stage-pos {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(163,170,174,0.15);
+      border-radius: 3px;
+      padding: 1rem 0.8rem;
+      text-align: center;
+    }
+    .stage-pos.center-back { grid-column: 2; }
+    .stage-pos.left { grid-column: 1; grid-row: 2; }
+    .stage-pos.center { grid-column: 2; grid-row: 2; }
+    .stage-pos.right { grid-column: 3; grid-row: 2; }
+
+    .stage-pos-icon {
+      font-size: 1.3rem; margin-bottom: 0.4rem; display: block;
+    }
+    .stage-pos-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.95rem; letter-spacing: 0.05em; color: var(--cream);
+      display: block;
+    }
+    .stage-pos-detail {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--c1); margin-top: 0.2rem; display: block;
+    }
+
+    .stage-front {
+      text-align: center;
+      padding-top: 1rem;
+      border-top: 2px solid rgba(163,170,174,0.2);
+    }
+    .stage-front span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--c2);
+    }
+
+    /* TABLES */
+    .rider-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    .rider-table th {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--warm);
+      text-align: left; padding: 0.6rem 1rem;
+      border-bottom: 1px solid rgba(163,170,174,0.2);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .rider-table td {
+      padding: 0.75rem 1rem;
+      color: var(--c1);
+      border-bottom: 1px solid rgba(163,170,174,0.07);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .rider-table tr:hover td {
+      background: rgba(255,255,255,0.02);
+      color: var(--cream);
+    }
+
+    .rider-table td:first-child {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem; color: var(--c2);
+      white-space: nowrap; width: 2.5rem;
+    }
+
+    .rider-table .ideal { color: var(--green); }
+    .rider-table .minimo { color: var(--red); }
+    .rider-table .nota { color: var(--c2); font-size: 0.75rem; font-style: italic; }
+
+    /* KANBAN / CARDS para backline */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .req-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(163,170,174,0.12);
+      border-radius: 4px;
+      padding: 1.2rem 1.2rem 1.4rem;
+      transition: border-color 0.3s;
+    }
+    .req-card:hover { border-color: rgba(201,185,154,0.25); }
+
+    .req-card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem; letter-spacing: 0.06em; color: var(--cream);
+      margin-bottom: 0.8rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .req-card-title svg { opacity: 0.5; }
+
+    .req-row {
+      display: flex; flex-direction: column; gap: 0.25rem;
+      margin-bottom: 0.6rem;
+    }
+    .req-row:last-child { margin-bottom: 0; }
+
+    .req-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.52rem; letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 0.1rem;
+    }
+    .req-tag.ideal { color: var(--green); }
+    .req-tag.min { color: var(--red); }
+
+    .req-val {
+      font-size: 0.78rem; color: var(--c1); line-height: 1.4;
+    }
+
+    /* NOTAS */
+    .notes-list {
+      display: flex; flex-direction: column; gap: 0.6rem;
+    }
+    .note-item {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 0.9rem 1rem;
+      background: rgba(255,255,255,0.025);
+      border-left: 2px solid rgba(201,185,154,0.4);
+      border-radius: 0 3px 3px 0;
+      font-size: 0.82rem; color: var(--c1); line-height: 1.5;
+    }
+    .note-item .arrow {
+      color: var(--warm); font-family: 'Space Mono', monospace;
+      flex-shrink: 0; margin-top: 0.05rem;
+    }
+
+    /* TIEMPOS */
+    .tiempos-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+
+    .tiempo-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(163,170,174,0.12);
+      border-radius: 4px; padding: 1.4rem;
+    }
+
+    .tiempo-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--c2); margin-bottom: 0.6rem;
+    }
+
+    .tiempo-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem; letter-spacing: 0.04em; color: var(--cream);
+      margin-bottom: 0.8rem;
+    }
+
+    .tiempo-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(163,170,174,0.07);
+    }
+    .tiempo-row:last-child { border-bottom: none; }
+    .tiempo-row span:first-child { font-size: 0.75rem; color: var(--c1); }
+    .tiempo-row .val {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem; color: var(--warm);
+    }
+
+    .tiempo-total {
+      grid-column: 1 / -1;
+      background: rgba(201,185,154,0.06);
+      border: 1px solid rgba(201,185,154,0.2);
+      border-radius: 4px; padding: 1.2rem 1.4rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .tiempo-total span { font-size: 0.82rem; color: var(--c1); }
+    .tiempo-total .total-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.04em; color: var(--warm);
+    }
+
+    /* FIRMAS */
+    .firmas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .firma-block {
+      padding: 1.5rem 0 0;
+    }
+
+    .firma-line {
+      border-bottom: 1px solid rgba(163,170,174,0.25);
+      margin-bottom: 0.6rem;
+      height: 2.5rem;
+    }
+
+    .firma-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--c2);
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      border-top: 1px solid rgba(163,170,174,0.1);
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.2em; color: var(--c2);
+    }
+    .footer-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--c3); margin-top: 0.4rem;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.2rem; }
+      .page-header { padding: 7rem 1.2rem 3rem; }
+      main { padding: 2.5rem 1.2rem 5rem; gap: 3rem; }
+      .tiempos-grid { grid-template-columns: 1fr; }
+      .stage-grid { grid-template-columns: 1fr 1fr; }
+      .stage-pos.center-back { grid-column: 1 / -1; }
+      .rider-table { font-size: 0.75rem; }
+      .rider-table th, .rider-table td { padding: 0.5rem 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="grain-canvas"></canvas>
+
+  <nav>
+    <div class="nav-left">
+      <a href="frenesi.html" class="nav-logo">FRENESÍ</a>
+      <a href="frenesi.html" class="nav-back">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver
+      </a>
+    </div>
+    <span class="nav-label">Rider Técnico 2026</span>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <p class="header-tag">Documento técnico · Rock and Roll · 4 integrantes</p>
+      <h1 class="page-title">
+        RIDER<br><span class="outline">TÉCNICO</span>
+      </h1>
+      <div class="page-meta">
+        <span class="meta-chip">Todo en vivo</span>
+        <span class="meta-chip">Sin pistas</span>
+        <span class="meta-chip accent">13 canales de entrada</span>
+        <span class="meta-chip">4 envíos de monitor</span>
+      </div>
+      <a href="RIDER_TECNICO_FRENESI.pdf" download class="download-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Descargar PDF
+      </a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- MÚSICOS -->
+    <section class="rider-section">
+      <p class="section-eyebrow">01 — Formación</p>
+      <h2 class="section-title">Músicos</h2>
+      <div class="musicians-grid">
+        <div class="musician-card">
+          <span class="musician-num">1</span>
+          <span class="musician-instrument">Guitarra Eléctrica</span>
+          <span class="musician-role">+ Voz principal</span>
+        </div>
+        <div class="musician-card">
+          <span class="musician-num">2</span>
+          <span class="musician-instrument">Bajo Eléctrico</span>
+          <span class="musician-role">+ Voz coro</span>
+        </div>
+        <div class="musician-card">
+          <span class="musician-num">3</span>
+          <span class="musician-instrument">Batería</span>
+          <span class="musician-role">Acústica completa</span>
+        </div>
+        <div class="musician-card">
+          <span class="musician-num">4</span>
+          <span class="musician-instrument">Teclados / Piano</span>
+          <span class="musician-role">+ Voz coro</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE PLOT -->
+    <section class="rider-section">
+      <p class="section-eyebrow">02 — Disposición</p>
+      <h2 class="section-title">Stage Plot</h2>
+      <div class="stage-plot">
+        <p class="stage-label">▲ Fondo de escenario</p>
+        <div class="stage-grid">
+          <div class="stage-pos center-back">
+            <span class="stage-pos-icon">🥁</span>
+            <span class="stage-pos-name">Batería</span>
+            <span class="stage-pos-detail">Fondo centro</span>
+          </div>
+          <div class="stage-pos left">
+            <span class="stage-pos-icon">🎸</span>
+            <span class="stage-pos-name">Bajo + Voz</span>
+            <span class="stage-pos-detail">Lateral izq.</span>
+          </div>
+          <div class="stage-pos center">
+            <span class="stage-pos-icon">🎤</span>
+            <span class="stage-pos-name">Gtr + Voz</span>
+            <span class="stage-pos-detail">Centro</span>
+          </div>
+          <div class="stage-pos right">
+            <span class="stage-pos-icon">🎹</span>
+            <span class="stage-pos-name">Piano + Voz</span>
+            <span class="stage-pos-detail">Lateral der.</span>
+          </div>
+        </div>
+        <div class="stage-front">
+          <span>▼ Frente de escenario / Público ▼</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MONITOREO -->
+    <section class="rider-section">
+      <p class="section-eyebrow">03 — Monitor</p>
+      <h2 class="section-title">Monitoreo</h2>
+      <table class="rider-table">
+        <thead>
+          <tr>
+            <th>Pos.</th>
+            <th>Músico</th>
+            <th>Ideal</th>
+            <th>Mínimo</th>
+            <th>Mix sugerido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Guitarra / Voz</td>
+            <td class="ideal">In-ear</td>
+            <td class="minimo">In-ear</td>
+            <td class="nota">Todas las voces + bajo + gtr + piano + batería</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Batería</td>
+            <td class="ideal">In-ear</td>
+            <td class="minimo">In-ear</td>
+            <td class="nota">Todas las voces + bajo + gtr + piano</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Bajo / Voz</td>
+            <td class="ideal">Monitor de piso</td>
+            <td class="minimo">Monitor de piso</td>
+            <td class="nota">Todas las voces + bajo + gtr + piano + batería</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Piano / Voz</td>
+            <td class="ideal">Monitor de piso</td>
+            <td class="minimo">Monitor de piso</td>
+            <td class="nota">Todas las voces + bajo + gtr + piano + batería</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note-item" style="margin-top:1rem;">
+        <span class="arrow">★</span>
+        <span>2 salidas in-ear (aux estéreo o mono) · 2 cuñas de piso para bajo y piano · <strong style="color:var(--cream)">Total: 4 envíos de monitor independientes</strong></span>
+      </div>
+    </section>
+
+    <!-- INPUT LIST -->
+    <section class="rider-section">
+      <p class="section-eyebrow">04 — Señales</p>
+      <h2 class="section-title">Input List</h2>
+      <table class="rider-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Canal / Instrumento</th>
+            <th>Ideal</th>
+            <th>Mínimo</th>
+            <th>Notas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Voz principal</td><td class="ideal">Shure Beta 58A / SM58</td><td class="minimo">SM58</td><td class="nota">Parante con jirafa</td></tr>
+          <tr><td>2</td><td>Voz 2</td><td class="ideal">Shure Beta 58A</td><td class="minimo">SM58</td><td class="nota">Parante recto</td></tr>
+          <tr><td>3</td><td>Voz 3</td><td class="ideal">Shure Beta 58A</td><td class="minimo">SM58</td><td class="nota">Parante recto</td></tr>
+          <tr><td>4</td><td>Guitarra eléctrica</td><td class="ideal">SM57 + MD421 (doble)</td><td class="minimo">SM57</td><td class="nota">Mic en capuchón del amp</td></tr>
+          <tr><td>5</td><td>Bajo eléctrico</td><td class="ideal">SM57 (amp)</td><td class="minimo">SM57</td><td class="nota">Mic en capuchón del amp de bajo</td></tr>
+          <tr><td>6</td><td>Bombo</td><td class="ideal">AKG D112 / Beta 52A</td><td class="minimo">Shure PG52</td><td class="nota">Dentro del bombo</td></tr>
+          <tr><td>7</td><td>Redoblante</td><td class="ideal">SM57 top + SM57 bot</td><td class="minimo">SM57 solo top</td><td class="nota">Parante articulado 45°</td></tr>
+          <tr><td>8</td><td>Hi-Hat</td><td class="ideal">AKG C451 / SM81</td><td class="minimo">SM57</td><td class="nota">Parante brazo corto</td></tr>
+          <tr><td>9</td><td>Tom 1 (piso)</td><td class="ideal">Sennheiser e604 clip</td><td class="minimo">SM57 con soporte</td><td class="nota">Clip de aro preferido</td></tr>
+          <tr><td>10</td><td>Tom 2 (aéreo)</td><td class="ideal">Sennheiser e604 clip</td><td class="minimo">SM57 con soporte</td><td class="nota"></td></tr>
+          <tr><td>11</td><td>Overhead L</td><td class="ideal">AKG C451 / Rode NT5</td><td class="minimo">Condensador genérico</td><td class="nota">Par estéreo XY/ORTF</td></tr>
+          <tr><td>12</td><td>Overhead R</td><td class="ideal">AKG C451 / Rode NT5</td><td class="minimo">Condensador genérico</td><td class="nota"></td></tr>
+          <tr><td>13</td><td>Piano (línea directa)</td><td class="ideal">DI activa Radial J48</td><td class="minimo">DI pasiva (jack)</td><td class="nota">Sin salida canon. Línea directa jack.</td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex;gap:1.5rem;margin-top:1rem;flex-wrap:wrap;">
+        <span style="font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--c2)">Total canales: <strong style="color:var(--cream)">13</strong></span>
+        <span style="font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;color:var(--green)">■ Verde = ideal</span>
+        <span style="font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;color:var(--red)">■ Rojo = mínimo aceptable</span>
+      </div>
+    </section>
+
+    <!-- BACKLINE -->
+    <section class="rider-section">
+      <p class="section-eyebrow">05 — Equipamiento</p>
+      <h2 class="section-title">Backline Requerido</h2>
+      <div class="cards-grid">
+        <div class="req-card">
+          <div class="req-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            Amp Guitarra
+          </div>
+          <div class="req-row">
+            <span class="req-tag ideal">Ideal</span>
+            <span class="req-val">Marshall JCM800/900, Mesa Boogie, Peavey 5150 — Cabezal + caja 4x12</span>
+          </div>
+          <div class="req-row">
+            <span class="req-tag min">Mínimo</span>
+            <span class="req-val">Combo 50W+ (Marshall, Fender, Peavey). SIN amplificadores de práctica.</span>
+          </div>
+        </div>
+        <div class="req-card">
+          <div class="req-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+            Amp Bajo
+          </div>
+          <div class="req-row">
+            <span class="req-tag ideal">Ideal</span>
+            <span class="req-val">Ampeg SVT + caja 8x10 / Hartke 4x10</span>
+          </div>
+          <div class="req-row">
+            <span class="req-tag min">Mínimo</span>
+            <span class="req-val">Combo bajo 200W+. Ampeg, Hartke, GK.</span>
+          </div>
+        </div>
+        <div class="req-card">
+          <div class="req-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+            Batería
+          </div>
+          <div class="req-row">
+            <span class="req-tag ideal">Ideal</span>
+            <span class="req-val">Pearl / Tama / Mapex: bombo 22", 2 toms aéreos, floor tom</span>
+          </div>
+          <div class="req-row">
+            <span class="req-tag min">Mínimo</span>
+            <span class="req-val">Cuerpo completo en buen estado. Redoblante y platos los trae la banda.</span>
+          </div>
+        </div>
+        <div class="req-card">
+          <div class="req-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+            Soporte Teclados
+          </div>
+          <div class="req-row">
+            <span class="req-tag ideal">Ideal</span>
+            <span class="req-val">Doble soporte en X, altura regulable</span>
+          </div>
+          <div class="req-row">
+            <span class="req-tag min">Mínimo</span>
+            <span class="req-val">1 soporte en X estable. La banda trae su instrumento.</span>
+          </div>
+        </div>
+      </div>
+      <div class="note-item" style="margin-top:1rem;">
+        <span class="arrow">★</span>
+        <span>La banda lleva: guitarras, bajo, piano, redoblante, platos completos, pedales y cables de instrumento.</span>
+      </div>
+    </section>
+
+    <!-- CONSOLA Y PA -->
+    <section class="rider-section">
+      <p class="section-eyebrow">06 — Sonido</p>
+      <h2 class="section-title">Consola FOH y PA</h2>
+      <table class="rider-table">
+        <thead>
+          <tr><th>Elemento</th><th>Ideal</th><th>Mínimo</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="width:auto;color:var(--c1);">Consola FOH</td>
+            <td class="ideal">Digital 32ch+ (Midas M32, Yamaha CL/QL, DiGiCo SD)</td>
+            <td class="minimo">Analógica/digital 16ch con EQ por canal y 14ch libres</td>
+          </tr>
+          <tr>
+            <td style="width:auto;color:var(--c1);">Consola monitores</td>
+            <td class="ideal">Consola digital dedicada (separada de FOH)</td>
+            <td class="minimo">Aux desde FOH con envíos independientes por músico</td>
+          </tr>
+          <tr>
+            <td style="width:auto;color:var(--c1);">Sistema PA</td>
+            <td class="ideal">Line array 2x6 elem. por lado + 4 subwoofers mín.</td>
+            <td class="minimo">PA activo 2 vías por lado, potencia adecuada al venue</td>
+          </tr>
+          <tr>
+            <td style="width:auto;color:var(--c1);">Procesamiento</td>
+            <td class="ideal">Compresor + gate por canal, reverb/delay send, EQ gráfico en mains</td>
+            <td class="minimo">EQ gráfico en main + compresor en voces</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ENERGÍA -->
+    <section class="rider-section">
+      <p class="section-eyebrow">07 — Electricidad</p>
+      <h2 class="section-title">Energía Eléctrica</h2>
+      <table class="rider-table">
+        <thead>
+          <tr><th>Elemento</th><th>Ideal</th><th>Mínimo</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="width:auto;color:var(--c1);">Tomas en escena</td>
+            <td class="ideal">8 tomas 220V independientes (no compartir con iluminación)</td>
+            <td class="minimo">6 tomas 220V con tierra (extensiones multi-contacto si necesario)</td>
+          </tr>
+          <tr>
+            <td style="width:auto;color:var(--c1);">Tierra eléctrica</td>
+            <td class="ideal">Tierra limpia certificada en todas las tomas de audio</td>
+            <td class="minimo">Tierra al menos en tomas de audio (evitar hum/ruido)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- TIEMPOS -->
+    <section class="rider-section">
+      <p class="section-eyebrow">08 — Logística</p>
+      <h2 class="section-title">Tiempos Requeridos</h2>
+      <div class="tiempos-grid">
+        <div class="tiempo-card">
+          <p class="tiempo-label">Etapa 1</p>
+          <p class="tiempo-name">Montaje + Cable</p>
+          <div class="tiempo-row">
+            <span>Tiempo ideal</span>
+            <span class="val">20 min</span>
+          </div>
+          <div class="tiempo-row">
+            <span>Tiempo mínimo</span>
+            <span class="val">20 min</span>
+          </div>
+        </div>
+        <div class="tiempo-card">
+          <p class="tiempo-label">Etapa 2</p>
+          <p class="tiempo-name">Soundcheck</p>
+          <div class="tiempo-row">
+            <span>Tiempo ideal</span>
+            <span class="val">20 min</span>
+          </div>
+          <div class="tiempo-row">
+            <span>Tiempo mínimo</span>
+            <span class="val">20 min</span>
+          </div>
+        </div>
+        <div class="tiempo-total">
+          <span>Total pre-show requerido</span>
+          <span class="total-val">40 MIN</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTAS GENERALES -->
+    <section class="rider-section">
+      <p class="section-eyebrow">09 — Importante</p>
+      <h2 class="section-title">Notas Generales</h2>
+      <div class="notes-list">
+        <div class="note-item"><span class="arrow">→</span><span>El técnico de sonido del venue debe estar presente al menos 30 min antes del montaje.</span></div>
+        <div class="note-item"><span class="arrow">→</span><span>Todo el cableado de escena (multipares, cajas de escena) es responsabilidad del venue.</span></div>
+        <div class="note-item"><span class="arrow">→</span><span>Ante ausencia de backline, notificar con mínimo <strong style="color:var(--cream)">72 hs de anticipación</strong>.</span></div>
+        <div class="note-item"><span class="arrow">→</span><span>El rider mínimo es <strong style="color:var(--cream)">condición excluyente</strong> para que la banda pueda presentarse.</span></div>
+        <div class="note-item"><span class="arrow">→</span><span>Buena iluminación de escena para músicos requerida (no solo luces de show).</span></div>
+        <div class="note-item"><span class="arrow">→</span><span>No se comparte línea eléctrica de audio con equipos de iluminación.</span></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p class="footer-logo">FRENESÍ</p>
+    <p class="footer-sub">Rider Técnico 2026 · Rock and Roll · Rosario, AR</p>
+  </footer>
+
+  <script>
+    /* GRAIN */
+    const canvas = document.getElementById('grain-canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+    function generateNoise() {
+      const img = ctx.createImageData(w, h);
+      const d = img.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const v = Math.random() * 255 | 0;
+        d[i] = v; d[i+1] = v; d[i+2] = v; d[i+3] = Math.random() * 30 | 0;
+      }
+      ctx.putImageData(img, 0, 0);
+    }
+    function animateGrain() { generateNoise(); requestAnimationFrame(animateGrain); }
+    window.addEventListener('resize', resize);
+    resize(); animateGrain();
+
+    /* SCROLL REVEAL */
+    const sections = document.querySelectorAll('.rider-section');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    sections.forEach(s => obs.observe(s));
+  </script>
+</body>
+</html>
