@@ -1182,16 +1182,12 @@
 
       .nav-metro-mobile-item {
         display: block;
-        position: fixed;
-        top: 1.5rem;
-        right: -100%;
-        padding: 0;
-        z-index: 1001;
-        transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+        width: 100%;
+        margin-bottom: 0.75rem;
       }
 
-      .nav-metro-mobile-item.open {
-        right: calc(min(75vw, 320px) - 3rem);
+      .nav-metro-mobile {
+        justify-content: flex-start;
       }
 
       .nav-links {
@@ -1538,6 +1534,12 @@
       </a>
     </div>
     <ul class="nav-links">
+      <li class="nav-metro-mobile-item">
+        <a href="https://metro.frenesi.com.ar" class="nav-rider nav-rider-mobile nav-metro nav-metro-mobile" aria-label="Metrónomo y afinador">
+          <span class="metro-symbol" aria-hidden="true">𝄞</span>
+          Metro
+        </a>
+      </li>
       <li><a href="#members">Banda</a></li>
       <li><a href="#shows">Shows</a></li>
       <li><a href="#about">Nosotros</a></li>
@@ -1556,11 +1558,6 @@
         </a>
       </li>
     </ul>
-    <div class="nav-metro-mobile-item">
-      <a href="https://metro.frenesi.com.ar" class="nav-rider nav-rider-mobile nav-metro nav-metro-mobile" aria-label="Metrónomo y afinador">
-        <span class="metro-symbol" aria-hidden="true">𝄞</span>
-      </a>
-    </div>
     <div class="nav-social-btns">
       <a href="https://metro.frenesi.com.ar" class="nav-rider nav-metro" aria-label="Metrónomo y afinador">
         <span class="metro-symbol" aria-hidden="true">𝄞</span>
@@ -1586,7 +1583,7 @@
       </a>
     </div>
     <button class="nav-toggle" aria-label="Menu"
-      onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open'); document.querySelector('.nav-metro-mobile-item').classList.toggle('open')">
+      onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open')">
       <span></span><span></span><span></span>
     </button>
   </nav>
