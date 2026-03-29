@@ -1097,16 +1097,6 @@
     }
 
     /* ===================== HAMBURGER NAV ===================== */
-    
-    @media (max-width: 900px) {
-      .nav-metro-mobile-item {
-        position: fixed;
-        top: 2rem;
-        right: calc(75vw - 3rem);
-        max-right: calc(320px - 3rem);
-        z-index: 1001;
-      }
-    }
     .nav-toggle {
       display: none;
       flex-direction: column;
@@ -1182,6 +1172,7 @@
       }
 
       .nav-metro-mobile-item {
+        display: block;
         position: fixed;
         top: 1.5rem;
         right: -100%;
@@ -1191,7 +1182,7 @@
       }
 
       .nav-metro-mobile-item.open {
-        right: calc(100% - 75vw + 1rem);
+        right: calc(min(75vw, 320px) - 3rem);
       }
 
       .nav-links {
