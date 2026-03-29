@@ -1190,8 +1190,7 @@
         transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1);
       }
 
-      .nav-toggle.open ~ .nav-metro-mobile-item,
-      .nav-links.open ~ .nav-metro-mobile-item {
+      .nav-metro-mobile-item.open {
         right: calc(100% - 75vw + 1rem);
       }
 
@@ -1591,7 +1590,7 @@
       </a>
     </div>
     <button class="nav-toggle" aria-label="Menu"
-      onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open')">
+      onclick="this.classList.toggle('open'); document.querySelector('.nav-links').classList.toggle('open'); document.querySelector('.nav-metro-mobile-item').classList.toggle('open')">
       <span></span><span></span><span></span>
     </button>
   </nav>
