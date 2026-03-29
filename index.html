@@ -1183,15 +1183,16 @@
 
       .nav-metro-mobile-item {
         position: fixed;
-        top: 2rem;
+        top: 1.5rem;
         right: -100%;
-        padding: 0.5rem;
+        padding: 0;
         z-index: 1001;
         transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1);
       }
 
+      .nav-toggle.open ~ .nav-metro-mobile-item,
       .nav-links.open ~ .nav-metro-mobile-item {
-        right: calc(75vw - 4rem);
+        right: calc(100% - 75vw + 1rem);
       }
 
       .nav-links {
