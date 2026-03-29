@@ -190,6 +190,7 @@
       flex-shrink: 0;
     }
 
+    .nav-metro,
     .nav-instagram,
     .nav-youtube {
       display: flex;
@@ -203,6 +204,11 @@
       flex-shrink: 0;
     }
 
+    .nav-metro {
+      background: linear-gradient(135deg, #3b3f45 0%, #1f2227 100%);
+      color: #fff;
+    }
+
     .nav-instagram {
       background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
       color: #fff;
@@ -213,6 +219,7 @@
       color: #fff;
     }
 
+    .nav-metro:hover,
     .nav-instagram:hover,
     .nav-youtube:hover {
       transform: scale(1.1);
@@ -1496,6 +1503,12 @@
       </li>
     </ul>
     <div class="nav-social-btns">
+      <a href="https://metro.frenesi.com.ar" target="_blank" class="nav-metro" aria-label="Metro">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M22.7 19.3l-5.6-5.6a7.56 7.56 0 0 0 .9-3.7A7.99 7.99 0 0 0 10 2a8 8 0 0 0-5.66 13.66A7.95 7.95 0 0 0 10 18a7.56 7.56 0 0 0 3.7-.9l5.6 5.6a1 1 0 0 0 1.4 0l2-2a1 1 0 0 0 0-1.4zM10 16a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm-1-9H7v2h2v2h2V9h2V7h-2V5H9v2z" />
+        </svg>
+      </a>
       <a href="https://www.instagram.com/frenesirock/" target="_blank" class="nav-instagram" aria-label="Instagram">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
           <path
